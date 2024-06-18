@@ -9,6 +9,7 @@ const Login = (props) => {
   const navigate = useNavigate()
 
   const onButtonClick = () => {
+    console.log(typeof login)
     fetch('http://localhost:3080/auth', {
       method: 'POST',
       headers: {
@@ -20,8 +21,10 @@ const Login = (props) => {
     .then((r) => {
       if ('success'===r.message){
       localStorage.setItem('user', JSON.stringify({login}))
+      localStorage.setItem('role',JSON.stringify(r.position))
+      console.log(localStorage.getItem('role'))
       props.setLoggedIn(true)
-      props.setLogin("xd")
+      props.setLogin(JSON.stringify({login}))
       navigate('/home')
 
     }else
