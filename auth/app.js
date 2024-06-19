@@ -46,17 +46,17 @@ app.listen(3080)
 app.post('/auth',(req,res)=>{
   console.log(req.body)
     const {login,password}=req.body 
-    console.log(login)  
-    console.log(typeof password) 
+    // console.log(login)  
+    // console.log(typeof password) 
     db.query('SELECT position FROM employee WHERE login =? AND pass=?',[login,password],function(err,result){
       
       if (err||result.length<=0){
             return res.status(401).json({status:'err',message:'err'})
         }else{
           let value=JSON.parse(JSON.stringify(result)) 
-          console.log(result)
-          console.log(login)
-          console.log(password)
+          // console.log(result)
+          // console.log(login)
+          // console.log(password)
           connectUser(login,password)
           if(result.length>0)
             return res.status(200).json({status:'success',message:'success',position:value[0].position})}
@@ -69,7 +69,24 @@ app.post('/getData',(req,res)=>{
   console.log(e)
     dbUser.query('SELECT * FROM ??',[e],function(err,result){
       if (err){
-        console.log("error")
+        //console.log("error")
+        return res.status(401).json({status:'err',message:'err'})
+        
+      }else{
+        //console.log("succ")
+        let value=JSON.parse(JSON.stringify(result))
+        //console.log(result)
+            return res.status(200).json({status:'success',message:'success',data:value})
+      }
+    })
+})
+app.post('/sort',(req,res)=>{
+  const {e}=req.body
+  console.log(req.body)
+  console.log(e)
+    dbUser.query('SELECT * FROM employee ORDER BY ??',[e],function(err,result){
+      if (err){
+        console.log(err)
         return res.status(401).json({status:'err',message:'err'})
         
       }else{
@@ -81,14 +98,26 @@ app.post('/getData',(req,res)=>{
     })
 })
 
+app.post('/search',(req,res)=>{
+  let searchData=req.body.search
+  dbUser.query('SELECT * FROM employee WHERE '+searchData.target+' LIKE "'+searchData.data+'%"',[searchData.target],function(err,result){
+    if (err){
+      console.log(err)
+      return res.status(401).json({status:'err',message:'err'})
+    }else{
+      console.log("succccc")
+      let value=JSON.parse(JSON.stringify(result))
+      console.log(result)
+          return res.status(200).json({status:'success',message:'success',data:value})
+    }
+  })
+})
+
 app.post('/newEmployee',(req,res)=>{
   //console.log(req.body)
   console.log("bodu")
   let userData=req.body.employee;
-  console.log(JSON.stringify(userData.FullName))
-  console.log(userData)
-  console.log(JSON.stringify(userData.FullName),JSON.stringify(userData.Subdivision),JSON.stringify(userData.Position),JSON.stringify(userData.PeoplePartner),JSON.stringify(userData.OutOfOfficeBallance),JSON.stringify(userData.Login),JSON.stringify(userData.Password))
-  dbUser.query('INSERT INTO employee ( FullName, Subdivision, Position, Status, PeoplePartner, OutOfOfficeBallance, login, pass) VALUES  (?, ?, ?,?, ?, ?, ?,?); CREATE USER ?@ ? IDENTIFIED BY ?;',
+    dbUser.query('INSERT INTO employee ( FullName, Subdivision, Position, Status, PeoplePartner, OutOfOfficeBallance, login, pass) VALUES  (?, ?, ?,?, ?, ?, ?,?); CREATE USER ?@ ? IDENTIFIED BY ?;',
     [userData.FullName,userData.Subdivision,userData.Position,"Active",userData.PeoplePartner,userData.OutOfOfficeBallance,userData.Login,userData.Password,userData.Login,"localhost",userData.Password],function(err,result){
     if (err){
       console.log(err)

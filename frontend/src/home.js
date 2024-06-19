@@ -8,7 +8,7 @@ const Home = (props) => {
     const [mode, setMode]=useState('')
     const [data,setData]=useState('')
     const [popup,setPopup]=useState(true)
-    const buttonValidation=useRef(false)
+    const [search,setSearch]=useState({data:'',target:'FullName'})
     const [employee,setEmployee]=useState({
         FullName:'',
         Subdivision:'',
@@ -19,7 +19,8 @@ const Home = (props) => {
         Password:''
     })
     const onButtonClick=(e)=>{
-        
+        console.log(typeof e)
+        console.log(e)
         
         console.log(mode)
         console.log(typeof mode)
@@ -41,17 +42,7 @@ const Home = (props) => {
                 tempStr[x]=(Object.values(r.data[x]))
                 
               }
-              console.log("val")
-              console.log(Object.values(r.data))
-              console.log(Object.values(Object.values(r.data[0])))
-              console.log("vk")
-              console.log(Object.keys(r.data))
-              console.log(Object.keys(Object.keys(r.data)))
-              console.log(typeof r.data)
-              console.log(r.data)
-              console.log(typeof tempStr)
-              console.log(Object.values(tempStr))
-              console.log(typeof Object.values(tempStr))
+              
                 setData(Object.values(tempStr))
                 
                 
@@ -62,6 +53,35 @@ const Home = (props) => {
             
     }
 
+    const orderBy=(e)=>{
+      console.log(e)
+      console.log(typeof e)
+      fetch('http://localhost:3080/sort', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({e}),
+      })
+      .then((r) => r.json())
+      .then((r) => {
+        if ('success'===r.message){
+          let tempStr=[];
+          
+          for(let x=0;x<r.data.length;x++){
+            tempStr[x]=(Object.values(r.data[x]))
+            
+          }
+          
+            setData(Object.values(tempStr))
+            
+            
+            
+        }else
+        console.log(r)
+
+      })
+    }
    
     const newEmployee=()=>{
         if(employee.FullName&&employee.Subdivision&&employee.PeoplePartner&&employee.OutOfOfficeBallance&&employee.Login&&employee.Password){
@@ -82,7 +102,35 @@ const Home = (props) => {
               })
         }
     }
-
+    const newSearch=()=>{
+      if(search.data){
+        console.log(true)
+        fetch('http://localhost:3080/search', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({search}),
+          })
+          .then((r) => r.json())
+          .then((r) => {
+            if ('success'===r.message){
+              let tempStr=[];
+              
+              for(let x=0;x<r.data.length;x++){
+                tempStr[x]=(Object.values(r.data[x]))
+                
+              }
+              
+                setData(Object.values(tempStr))
+                
+                
+                
+            }else
+            console.log(r)
+    
+          })}}
+        
 
     return(
         <div>
@@ -91,18 +139,18 @@ const Home = (props) => {
         <input className={'inputButton'} type="button" onClick={()=>{setMode('project');onButtonClick('project');console.log("3")}} value={'Projects'} />
        
       <table border="1">
-       
+      
   <tr>
-    <th>id<button>↑</button></th>
-    <th>Full name<button>↑</button></th>
-    <th>Subdivision<button>↑</button></th>
-    <th>Position<button>↑</button></th>
-    <th>Status<button>↑</button></th>
-    <th>PeoplePartner<button>↑</button></th>
-    <th> OutOfOfficeBallance<button>↑</button></th>
-    <th>Photo<button>↑</button></th>
-    <th>login<button>↑</button></th>
-    <th> password<button>↑</button></th>
+    <th>id<button onClick={()=>{orderBy('ID')}}>↑</button></th>
+    <th>Full name<button onClick={()=>{orderBy('FullName')}}>↑</button></th>
+    <th>Subdivision<button onClick={()=>{orderBy('Subdivision')}}>↑</button></th>
+    <th>Position<button onClick={()=>{orderBy('Position')}}>↑</button></th>
+    <th>Status<button onClick={()=>{orderBy('Status')}}>↑</button></th>
+    <th>PeoplePartner<button onClick={()=>{orderBy('PeoplePartner')}}>↑</button></th>
+    <th> OutOfOfficeBallance<button onClick={()=>{orderBy('OutOfOfficeBallance')}}>↑</button></th>
+    <th>Photo</th>
+    <th>login<button onClick={()=>{orderBy('login')}}>↑</button></th>
+    <th>password<button onClick={()=>{orderBy('pass')}}>↑</button></th>
     
   </tr>
   
@@ -160,6 +208,41 @@ const Home = (props) => {
       
              <input type='button' onClick={newEmployee} value={'Submit'}/>
       </div>
+      <div>
+      <label>Search: 
+                <select name="search" onChange={(ev) => setSearch(((previous) => ({...previous,target: ev.target.value})))}>
+                    <option value="FullName">FullName</option>
+                    <option value="Subdivision">Subdivision</option>
+                    <option value="Position">Position</option>
+                    <option value="Status">Status</option>
+                    <option value="PeoplePartner">PeoplePartner</option>
+                    <option value="OutOfOfficeBallance">OutOfOfficeBallance</option>                
+                    <option value="login">login</option>
+                    <option value="pass">pass</option>                  
+                    
+                </select>
+            </label>
+            <input
+            hidden={(search.target==="Status"||search.target==="Position")?true:false}
+            value={search.data}            
+            onChange={(ev) => setSearch(((previous) => ({...previous, data: ev.target.value})))}
+            className={'inputBox'}></input>
+            <select hidden={(search.target==="Position")?false:true} value={search.data}            
+            onChange={(ev) => setSearch(((previous) => ({...previous, data: ev.target.value})))}>
+                   <option value="Project Manager">Project Manager</option>
+                    <option value="HR Manager">HR Manager</option>
+                    <option value="Administrator">Administrator</option>
+                    <option value="Employee">Employee</option>
+                  </select>
+            <select hidden={(search.target==="Status")?false:true} value={search.data}            
+            onChange={(ev) => setSearch(((previous) => ({...previous, data: ev.target.value})))}>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+            </select>
+
+        <input type='button' onClick={newSearch} value={'⌕'}/>
+      </div>
+      
         </div>
     )
 }
