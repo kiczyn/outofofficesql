@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { json, useNavigate } from 'react-router-dom'
 
 
 const Home = (props) => {
@@ -33,13 +33,36 @@ const Home = (props) => {
           })
           .then((r) => r.json())
           .then((r) => {
+            
             if ('success'===r.message){
-                setData(r.data)
+              let tempStr=[];
+              
+              for(let x=0;x<r.data.length;x++){
+                tempStr[x]=(Object.values(r.data[x]))
+                
+              }
+              console.log("val")
+              console.log(Object.values(r.data))
+              console.log(Object.values(Object.values(r.data[0])))
+              console.log("vk")
+              console.log(Object.keys(r.data))
+              console.log(Object.keys(Object.keys(r.data)))
+              console.log(typeof r.data)
+              console.log(r.data)
+              console.log(typeof tempStr)
+              console.log(Object.values(tempStr))
+              console.log(typeof Object.values(tempStr))
+                setData(Object.values(tempStr))
+                
+                
+                
             }else
             console.log(r)
           })
-        
+            
     }
+
+   
     const newEmployee=()=>{
         if(employee.FullName&&employee.Subdivision&&employee.PeoplePartner&&employee.OutOfOfficeBallance&&employee.Login&&employee.Password){
             console.log(true)
@@ -66,8 +89,29 @@ const Home = (props) => {
         <input className={'inputButton'} type="button" onClick={()=>{setMode('employee');onButtonClick('employee');console.log("1")}} value={'Employees'} />
         <input className={'inputButton'} type="button" onClick={()=>{setMode('leaverequest');onButtonClick('leaverequest');console.log("2")}} value={'Leave requests'} />
         <input className={'inputButton'} type="button" onClick={()=>{setMode('project');onButtonClick('project');console.log("3")}} value={'Projects'} />
-       <p>{JSON.stringify(data)}</p>
-       <p>{JSON.stringify(employee)}</p>
+       
+      <table border="1">
+       
+  <tr>
+    <th>id<button>↑</button></th>
+    <th>Full name<button>↑</button></th>
+    <th>Subdivision<button>↑</button></th>
+    <th>Position<button>↑</button></th>
+    <th>Status<button>↑</button></th>
+    <th>PeoplePartner<button>↑</button></th>
+    <th> OutOfOfficeBallance<button>↑</button></th>
+    <th>Photo<button>↑</button></th>
+    <th>login<button>↑</button></th>
+    <th> password<button>↑</button></th>
+    
+  </tr>
+  
+  
+  <tbody >{data?Object.values(data).map(e=><tr>{Object.values(e).map(x=><td>{x}</td>)}</tr>):(<td>d</td>)}</tbody>
+  </table>
+
+
+       <p hidden={employee.ID?false:true}>{JSON.stringify(employee)}</p>
        
        <input type='button' onClick={() => setPopup(!popup)} value={'New employee'}/>
 
