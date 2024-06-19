@@ -48,18 +48,19 @@ app.post('/auth',(req,res)=>{
     const {login,password}=req.body 
     // console.log(login)  
     // console.log(typeof password) 
-    db.query('SELECT position FROM employee WHERE login =? AND pass=?',[login,password],function(err,result){
+    db.query('SELECT position, FullName,ID FROM employee WHERE login =? AND pass=?',[login,password],function(err,result){
       
       if (err||result.length<=0){
             return res.status(401).json({status:'err',message:'err'})
         }else{
           let value=JSON.parse(JSON.stringify(result)) 
-          // console.log(result)
+           console.log(result+"avb")
           // console.log(login)
           // console.log(password)
           connectUser(login,password)
-          if(result.length>0)
-            return res.status(200).json({status:'success',message:'success',position:value[0].position})}
+          if(result.length>0){
+            console.log(value[0].FullName)
+            return res.status(200).json({status:'success',message:'success',position:value[0].position,FullName:value[0].FullName,ID:value[0].ID})}}
     })
 })
 
@@ -81,10 +82,10 @@ app.post('/getData',(req,res)=>{
     })
 })
 app.post('/sort',(req,res)=>{
-  const {e}=req.body
+  const {e,mode}=req.body
   console.log(req.body)
   console.log(e)
-    dbUser.query('SELECT * FROM employee ORDER BY ??',[e],function(err,result){
+    dbUser.query('SELECT * FROM ?? ORDER BY ?? DESC',[mode,e],function(err,result){
       if (err){
         console.log(err)
         return res.status(401).json({status:'err',message:'err'})
@@ -100,6 +101,8 @@ app.post('/sort',(req,res)=>{
 
 app.post('/search',(req,res)=>{
   let searchData=req.body.search
+  console.log("dzis")
+  console.log(req.body.search)
   dbUser.query('SELECT * FROM employee WHERE '+searchData.target+' LIKE "'+searchData.data+'%"',[searchData.target],function(err,result){
     if (err){
       console.log(err)
@@ -132,3 +135,23 @@ app.post('/newEmployee',(req,res)=>{
   })
   //return res.status(200)
 })
+
+app.post('/newLeave',(req,res)=>{
+  console.log(req.body.leave)
+  let leaveData=req.body.leave
+  dbUser.query('INSERT INTO leaverequest(Employee,AbsenceReason,StartDate,EndDate,Comment,Status) VALUES (?,?,?,?,?,?)',[leaveData.ID, leaveData.AbsenceReason, leaveData.StartDate, leaveData.EndDate, leaveData.comment, leaveData.Status],function(err,result){
+    if (err){
+      console.log(err)
+      return res.status(401).json({status:'err',message:'err'})
+      
+    }else{
+      console.log("succ")
+      
+      console.log(result)
+          return res.status(200).json({status:'success',message:'success'})
+    }
+  })
+  })
+
+
+

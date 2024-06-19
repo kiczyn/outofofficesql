@@ -20,9 +20,12 @@ const Login = (props) => {
     .then((r) => r.json())
     .then((r) => {
       if ('success'===r.message){
+        console.log(r)
       localStorage.setItem('user', JSON.stringify({login}))
       localStorage.setItem('role',JSON.stringify(r.position))
-      console.log(localStorage.getItem('role'))
+      localStorage.setItem('name',JSON.stringify(r.FullName))
+      localStorage.setItem('ID',JSON.stringify(r.ID))
+      console.log(localStorage.getItem('role')+"jd100")
       props.setLoggedIn(true)
       props.setLogin(JSON.stringify({login}))
       navigate('/home')
