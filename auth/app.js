@@ -87,7 +87,7 @@ app.post('/sort',(req,res)=>{
   const {e,mode}=req.body
   console.log(req.body)
   console.log(e)
-    dbUser.query('SELECT * FROM ?? ORDER BY ?? DESC',[mode,e],function(err,result){
+    dbUser.query('SELECT * FROM ?? ORDER BY ?? ',[mode,e],function(err,result){
       if (err){
         console.log(err)
         return res.status(401).json({status:'err',message:'err'})
@@ -122,8 +122,8 @@ app.post('/newEmployee',(req,res)=>{
   //console.log(req.body)
   console.log("bodu")
   let userData=req.body.employee;
-    dbUser.query('INSERT INTO employee ( FullName, Subdivision, Position, Status, PeoplePartner, OutOfOfficeBallance, login, pass) VALUES  (?, ?, ?,?, ?, ?, ?,?); CREATE USER ?@ ? IDENTIFIED BY ?;',
-    [userData.FullName,userData.Subdivision,userData.Position,"Active",userData.PeoplePartner,userData.OutOfOfficeBallance,userData.Login,userData.Password,userData.Login,"localhost",userData.Password],function(err,result){
+    dbUser.query('INSERT INTO employee ( FullName, Subdivision, Position, Status, PeoplePartner, OutOfOfficeBalance, login, pass) VALUES  (?, ?, ?,?, ?, ?, ?,?); CREATE USER ?@ ? IDENTIFIED BY ?;',
+    [userData.FullName,userData.Subdivision,userData.Position,"Active",userData.PeoplePartner,userData.OutOfOfficeBalance,userData.Login,userData.Password,userData.Login,"localhost",userData.Password],function(err,result){
     if (err){
       console.log(err)
       return res.status(401).json({status:'err',message:'err'})

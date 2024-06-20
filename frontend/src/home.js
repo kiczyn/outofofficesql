@@ -20,7 +20,7 @@ const Home = (props) => {
     Subdivision: '',
     Position: 'Project Manager',
     PeoplePartner: '',
-    OutOfOfficeBallance: '',
+    OutOfOfficeBalance: '',
     Login: '',
     Password: ''
   })
@@ -89,7 +89,7 @@ const Home = (props) => {
   }
 
   const newEmployee = () => {
-    if ((employee.FullName && employee.Subdivision && employee.PeoplePartner && employee.OutOfOfficeBallance && employee.Login && employee.Password)) {
+    if ((employee.FullName && employee.Subdivision && employee.PeoplePartner && employee.OutOfOfficeBalance && employee.Login && employee.Password)) {
       console.log(true)
       fetch('http://localhost:3080/newLeave', {
         method: 'POST',
@@ -140,7 +140,7 @@ const Home = (props) => {
               }
 
             }else{
-              
+
             }
 
           } else
@@ -189,7 +189,7 @@ const Home = (props) => {
             <th>Position<button onClick={() => { orderBy('Position') }}>↑</button></th>
             <th>Status<button onClick={() => { orderBy('Status') }}>↑</button></th>
             <th>PeoplePartner<button onClick={() => { orderBy('PeoplePartner') }}>↑</button></th>
-            <th> OutOfOfficeBallance<button onClick={() => { orderBy('OutOfOfficeBallance') }}>↑</button></th>
+            <th> OutOfOfficeBalance<button onClick={() => { orderBy('OutOfOfficeBalance') }}>↑</button></th>
             <th>Photo</th>
             <th>login<button onClick={() => { orderBy('login') }}>↑</button></th>
             <th>password<button onClick={() => { orderBy('pass') }}>↑</button></th>
@@ -214,7 +214,7 @@ const Home = (props) => {
               <option value="Position">Position</option>
               <option value="Status">Status</option>
               <option value="PeoplePartner">PeoplePartner</option>
-              <option value="OutOfOfficeBallance">OutOfOfficeBallance</option>
+              <option value="OutOfOfficeBalance">OutOfOfficeBalance</option>
               <option value="login">login</option>
               <option value="pass">pass</option>
 
@@ -270,12 +270,12 @@ const Home = (props) => {
             onChange={(ev) => setEmployee(((previous) => ({ ...previous, PeoplePartner: ev.target.value })))}
             className={'inputBox'}></input>
           <input
-            value={employee.OutOfOfficeBallance}
+            value={employee.OutOfOfficeBalance}
             placeholder="Out of office balance"
             type='number'
             min='0'
             max='365'
-            onChange={(ev) => setEmployee(((previous) => ({ ...previous, OutOfOfficeBallance: ev.target.value })))}
+            onChange={(ev) => setEmployee(((previous) => ({ ...previous, OutOfOfficeBalance: ev.target.value })))}
             className={'inputBox'}></input>
           <input
             value={employee.Login}
