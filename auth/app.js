@@ -14,7 +14,8 @@ var db = mysql.createConnection({
   user: process.env.user,
   password: process.env.password,
   port:process.env.port,
-  database: "outofoffice"
+  database: "outofoffice",
+  dateStrings: true
 });
 
 
@@ -31,7 +32,8 @@ const connectUser=(login,password)=>{
     user: login,
     password: password,
     port:process.env.port,
-    database: "outofoffice"
+    database: "outofoffice",
+    dateStrings: true
   });
   dbUser.connect(function(err) {
     if (err) throw err;

@@ -55,6 +55,7 @@ const Login = (props) => {
         <input
           value={password}
           placeholder="password"
+          type='password'
           onChange={(ev) => setPassword(ev.target.value)}
           className={'inputBox'}
         />

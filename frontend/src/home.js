@@ -4,16 +4,17 @@ import { json, useNavigate } from 'react-router-dom'
 
 const Home = (props) => {
   const [login, setLogin] = useState(localStorage.getItem('user'))
-  
+
   const [role, setRole] = useState(localStorage.getItem('role'))
   const [mode, setMode] = useState('')
-  const [leave, setLeave] = useState({Employee:'', AbsenceReason: 'sickLeave', StartDate: '', EndDate: '', comment: '' ,Status:'New'})
+  const [leave, setLeave] = useState({ Employee: '', AbsenceReason: 'sickLeave', StartDate: '', EndDate: '', comment: '', Status: 'New' })
   const [project, setProject] = useState('')
   const [data, setData] = useState('')
   const [popup, setPopup] = useState(true)
   const [empName, setEmpName] = useState(localStorage.getItem('name'))
-  const [empID,setEmpId]=useState(localStorage.getItem('ID'))
+  const [empID, setEmpId] = useState(localStorage.getItem('ID'))
   const [search, setSearch] = useState({ data: '', target: 'FullName' })
+  const [ifEdit, setIfEdit] = useState(false)
   const [employee, setEmployee] = useState({
     FullName: '',
     Subdivision: '',
@@ -65,7 +66,7 @@ const Home = (props) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ e ,mode}),
+      body: JSON.stringify({ e, mode }),
     })
       .then((r) => r.json())
       .then((r) => {
@@ -120,23 +121,26 @@ const Home = (props) => {
         .then((r) => r.json())
         .then((r) => {
           if ('success' === r.message) {
-            switch (mode) {
-              case "employee": {
-                let tempStr = [];
-                for (let x = 0; x < r.data.length; x++) {
-                  tempStr[x] = (Object.values(r.data[x]))
+            if (!ifEdit) {
+              switch (mode) {
+                case "employee": {
+                  let tempStr = [];
+                  for (let x = 0; x < r.data.length; x++) {
+                    tempStr[x] = (Object.values(r.data[x]))
+                  }
+                  setData(Object.values(tempStr))
+                  break;
                 }
-                setData(Object.values(tempStr))
-                break;
+                case "project": {
+                  console.log(r.data)
+                  setEmpName(r.data[0].FullName)
+                  break;
+                }
+
               }
-              case "project": {
-                console.log(r.data)
-                setEmpName(r.data[0].FullName)
-                break;
-              }
 
-
-
+            }else{
+              
             }
 
           } else
@@ -147,7 +151,7 @@ const Home = (props) => {
   }
   const newLeave = () => {
     console.log(leave)
-    if ((leave.AbsenceReason&&leave.EndDate&&leave.StartDate)) {
+    if ((leave.AbsenceReason && leave.EndDate && leave.StartDate)) {
       console.log(true)
       fetch('http://localhost:3080/newLeave', {
         method: 'POST',
@@ -165,7 +169,10 @@ const Home = (props) => {
         })
     }
   }
-
+  const edit = (id) => {
+    setIfEdit(true)
+    setSearch({ data: id, target: "ID" })
+  }
 
   return (
     <div>
@@ -190,7 +197,9 @@ const Home = (props) => {
           </tr>
 
 
-          <tbody >{data ? Object.values(data).map(e => <tr>{Object.values(e).map(x => <td>{x}</td>)}</tr>) : (<td>d</td>)}</tbody>
+          <tbody >{data ? Object.values(data).map(e => <tr>{Object.values(e).map(x => <td>{x}</td>)}<td><input type='button' id={e[0]} value={"Edit"} onClick={(ev) => {
+            edit(ev.target.id)
+          }}></input></td></tr>) : (<td>d</td>)}</tbody>
         </table>
 
 
@@ -241,6 +250,9 @@ const Home = (props) => {
             className={'inputBox'}></input>
           <input
             value={employee.Subdivision}
+            type='number'
+            min='0'
+            max='5'
             placeholder="Subdivision"
             onChange={(ev) => setEmployee(((previous) => ({ ...previous, Subdivision: ev.target.value })))}
             className={'inputBox'}></input>
@@ -260,6 +272,9 @@ const Home = (props) => {
           <input
             value={employee.OutOfOfficeBallance}
             placeholder="Out of office balance"
+            type='number'
+            min='0'
+            max='365'
             onChange={(ev) => setEmployee(((previous) => ({ ...previous, OutOfOfficeBallance: ev.target.value })))}
             className={'inputBox'}></input>
           <input
@@ -285,17 +300,19 @@ const Home = (props) => {
           <th>EndDate<button onClick={() => { orderBy('EndDate') }}>↑</button></th>
           <th>Comment<button onClick={() => { orderBy('Comment') }}>↑</button></th>
           <th>Status<button onClick={() => { orderBy('Status') }}>↑</button></th>
-          <tbody >{data ? Object.values(data).map(e => <tr>{Object.values(e).map(x => <td>{x}</td>)}</tr>) : (<td>d</td>)}</tbody>
+          <tbody >{data ? Object.values(data).map(e => <tr>{Object.values(e).map(x => <td>{x}</td>)}<td><input type='button' id={e[0]} value={"Edit"} onClick={(ev) => {
+            edit(ev.target.id)
+          }}></input></td></tr>) : (<td></td>)}</tbody>
         </table>
 
 
 
-        <input type='button' onClick={() => { setPopup(!popup)}}    value={'New leave request'} />
+        <input type='button' onClick={() => { setPopup(!popup) }} value={'New leave request'} />
 
         <div hidden={popup && mode === "leaverequest"}>
           <label >{empName}</label>
           <div>
-            <select id="absenceReason" name="absenceReason" onChange={(ev) => setLeave(((previous) => ({ ...previous, AbsenceReason: ev.target.value, ID:parseInt(localStorage.getItem('ID')) })))}>
+            <select id="absenceReason" name="absenceReason" onChange={(ev) => setLeave(((previous) => ({ ...previous, AbsenceReason: ev.target.value, ID: parseInt(localStorage.getItem('ID')) })))}>
               <option value="sickLeave">Sick Leave</option>
               <option value="vacation">Vacation</option>
               <option value="personalLeave">Personal Leave</option>
